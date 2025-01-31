@@ -1,0 +1,5 @@
+[build]
+rustflags = ["--cfg", "feature=\"build_hasher_simple_hash_one\""]
+
+[unstable]
+build-std = ["std", "panic_abort"]

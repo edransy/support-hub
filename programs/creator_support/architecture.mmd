@@ -1,0 +1,88 @@
+graph TD
+    subgraph Program[Creator Support Program]
+        Instructions[Instructions]
+        Accounts[Accounts]
+        PDAs[Program Derived Addresses]
+        TokenOps[Token Operations]
+        Errors[Error Handling]
+    end
+
+    subgraph Instructions
+        Initialize[initialize]
+        InitializeCreator[initialize_creator]
+        InitializeVault[initialize_vault]
+        SupportCreator[support_creator]
+        ClaimRewards[claim_rewards]
+        AdvanceTime[advance_time]
+    end
+
+    subgraph Accounts
+        CreatorSupportAccount[CreatorSupport]
+        CreatorAccount[Creator]
+        SupporterStakeAccount[SupporterStake]
+        VaultAccount[Vault Token Account]
+    end
+
+    subgraph PDAs
+        CreatorPDA[Creator PDA]
+        VaultPDA[Vault PDA]
+        MintAuthPDA[Mint Authority PDA]
+    end
+
+    subgraph TokenOps
+        TransferTokens[Token Transfers]
+        MintTokens[Token Minting]
+        AssociatedTokenAccounts[Associated Token Accounts]
+    end
+
+    subgraph Errors
+        OverflowError[Overflow]
+        InvalidArgumentError[Invalid Argument]
+        InvalidPercentageError[Invalid Percentage]
+        StakeTooSmallError[Stake Too Small]
+        NoRewardsError[No Rewards Available]
+        VaultInitializedError[Vault Already Initialized]
+    end
+
+    %% Relationships
+    Initialize --> CreatorSupportAccount
+    InitializeCreator --> CreatorAccount
+    InitializeVault --> VaultAccount
+    SupportCreator -->|Transfers 70%/30%| TransferTokens
+    ClaimRewards -->|Calculates & Mints| MintTokens
+
+    CreatorAccount --> CreatorPDA
+    VaultAccount --> VaultPDA
+    MintTokens --> MintAuthPDA
+
+    SupportCreator --> SupporterStakeAccount
+    SupporterStakeAccount -->|Tracks Staking| ClaimRewards
+
+    TransferTokens --> AssociatedTokenAccounts
+    MintTokens --> AssociatedTokenAccounts
+
+    CreatorSupportAccount -->|Configures| SupportCreator
+    CreatorSupportAccount -->|APR Config| ClaimRewards
+
+    %% Error Handling
+    SupportCreator --> OverflowError
+    SupportCreator --> InvalidPercentageError
+    ClaimRewards --> OverflowError
+    TransferTokens --> InvalidArgumentError
+    MintTokens --> InvalidArgumentError
+    SupportCreator --> StakeTooSmallError
+    ClaimRewards --> NoRewardsError
+    InitializeVault --> VaultInitializedError
+
+    %% Styling
+    classDef instruction fill:#f9f,stroke:#333,stroke-width:2px
+    classDef account fill:#bbf,stroke:#333,stroke-width:2px
+    classDef pda fill:#bfb,stroke:#333,stroke-width:2px
+    classDef error fill:#fbb,stroke:#333,stroke-width:2px
+    classDef token fill:#ffb,stroke:#333,stroke-width:2px
+
+    class Initialize,InitializeCreator,InitializeVault,SupportCreator,ClaimRewards,AdvanceTime instruction
+    class CreatorSupportAccount,CreatorAccount,SupporterStakeAccount,VaultAccount account
+    class CreatorPDA,VaultPDA,MintAuthPDA pda
+    class OverflowError,InvalidArgumentError,InvalidPercentageError,StakeTooSmallError,NoRewardsError,VaultInitializedError error
+    class TransferTokens,MintTokens,AssociatedTokenAccounts token 
